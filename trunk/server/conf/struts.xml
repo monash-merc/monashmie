@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+        "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+<struts>
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.configuration.xml.reload" value="false"/>
+    <constant name="struts.custom.i18n.resources" value="messageResource"/>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.action.extension" value="jspx,action,do,jspa, ,"/>
+    <constant name="struts.serve.static" value="true"/>
+    <constant name="struts.serve.static.browserCache" value="false"/>
+    <constant name="struts.ui.theme" value="simple"/>
+    <constant name="struts.enable.SlashesInActionNames" value="true"/>
+    <bean type="org.apache.struts2.dispatcher.multipart.MultiPartRequest" name="merc"
+          class="edu.monash.merc.struts2.multipart.MonitoredMultiPartRequest" scope="default"/>
+    <constant name="struts.multipart.handler" value="merc"/>
+    <constant name="struts.multipart.maxSize" value="2048000000"/>
+
+    <package name="core.merc" extends="struts-default">
+        <result-types>
+            <result-type name="freemarker" class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true"/>
+            <result-type name="json" class="org.apache.struts2.json.JSONResult"/>
+            <result-type name="rawtext" class="edu.monash.merc.struts2.dispatcher.RawTextResult"/>
+        </result-types>
+
+        <interceptors>
+            <interceptor name="authenInterceptor"
+                         class="edu.monash.merc.struts2.intercepter.AuthenticationInterceptor"/>
+            <interceptor-stack name="noneAuthStack">
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+            <interceptor-stack name="authenStack">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="authenInterceptor"/>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="noneAuthStack"/>
+
+        <global-results>
+
+            <!-- show login -->
+            <result name="login" type="chain">
+                <param name="actionName">showLogin</param>
+                <param name="namespace">/user</param>
+            </result>
+
+            <result name="file_not_found" type="freemarker">/web/404.html</result>
+            <result name="invocation_target_exception" type="freemarker">/web/global/invocation_target_exception.ftl
+            </result>
+
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping result="file_not_found" exception="java.io.FileNotFoundException"/>
+            <exception-mapping result="invocation_target_exception"
+                               exception="java.lang.reflect.InvocationTargetException"/>
+        </global-exception-mappings>
+
+        <action name="*">
+            <result type="freemarker">/web/{1}.ftl</result>
+        </action>
+        <action name="home" class="omero.homeAction" method="home">
+            <result type="freemarker">/web/home.ftl</result>
+        </action>
+    </package>
+
+    <package name="core.user" extends="core.merc" namespace="/user">
+        <default-interceptor-ref name="noneAuthStack"/>
+        <action name="userLogin" class="user.loginAction" method="login">
+            <result name="success" type="rawtext"/>
+        </action>
+
+    </package>
+    <package name="core.data" extends="core.merc" namespace="/data">
+        <default-interceptor-ref name="authenStack"/>
+        <action name="*">
+            <result type="freemarker">/web/data/{1}.ftl</result>
+        </action>
+        <!-- show the metadata registration -->
+        <action name="showMdReg" class="data.metadataRegAction" method="showMdReg">
+            <result name="success" type="rawtext"/>
+        </action>
+        <!-- metadata registration -->
+        <action name="mdReg" class="data.metadataRegAction" method="mdReg">
+            <result name="success" type="rawtext"/>
+        </action>
+    </package>
+</struts>

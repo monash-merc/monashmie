@@ -69,9 +69,14 @@
         <default-interceptor-ref name="noneAuthStack"/>
         <action name="userLogin" class="user.loginAction" method="login">
             <result name="success" type="rawtext"/>
+            <result name="error" type="rawtext"/>
         </action>
-
+        <action name="showLogin" class="user.loginAction" method="login">
+            <result name="success" type="rawtext"/>
+            <result name="error" type="rawtext"/>
+        </action>
     </package>
+    
     <package name="core.data" extends="core.merc" namespace="/data">
         <default-interceptor-ref name="authenStack"/>
         <action name="*">
@@ -80,10 +85,17 @@
         <!-- show the metadata registration -->
         <action name="showMdReg" class="data.metadataRegAction" method="showMdReg">
             <result name="success" type="rawtext"/>
+            <result name="error" type="rawtext"/>
         </action>
         <!-- metadata registration -->
         <action name="mdReg" class="data.metadataRegAction" method="mdReg">
             <result name="success" type="rawtext"/>
+            <result name="error" type="rawtext"/>
+        </action>
+        <!-- Search for party in research master -->
+        <action name="searchParty" class="data.searchPartyAction" method="searchParty">
+            <result name="success" type="rawtext"/>
+            <result name="error" type="rawtext"/>
         </action>
     </package>
 </struts>

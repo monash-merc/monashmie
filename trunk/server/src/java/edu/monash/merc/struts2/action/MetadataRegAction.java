@@ -49,6 +49,7 @@ import java.util.Map;
  * MetadataRegAction Action class
  *
  * @author Simon Yu - Xiaoming.Yu@monash.edu
+ * Modified by Sindhu Emilda - sindhu.emilda@monash.edu
  * @version 2.0
  */
 @Scope("prototype")
@@ -82,6 +83,8 @@ public class MetadataRegAction extends DMBaseAction {
     private String physicalAddress;
 
     private PartyBean addedPartyBean;
+    
+    private String stringResult;
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -105,6 +108,7 @@ public class MetadataRegAction extends DMBaseAction {
 
     public String mdReg() {
 
+    	stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>Data</test>";
         return SUCCESS;
     }
 
@@ -259,4 +263,15 @@ public class MetadataRegAction extends DMBaseAction {
     public void setAddedPartyBean(PartyBean addedPartyBean) {
         this.addedPartyBean = addedPartyBean;
     }
+
+
+	public String getStringResult() {
+		return stringResult;
+	}
+
+
+	public void setStringResult(String stringResult) {
+		this.stringResult = stringResult;
+	}
+    
 }

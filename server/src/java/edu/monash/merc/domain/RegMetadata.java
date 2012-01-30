@@ -1,5 +1,7 @@
 package edu.monash.merc.domain;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -46,8 +48,8 @@ public class RegMetadata extends Domain {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(targetEntity = Licence.class)
-    @JoinColumn(name = "licence_id", referencedColumnName = "id", nullable = false)
+    @OneToOne(mappedBy = "regMetadata", targetEntity = Licence.class, fetch = FetchType.LAZY)
+    @Cascade({CascadeType.DELETE})
     private Licence licence;
 
     @ManyToMany(targetEntity = Activity.class)

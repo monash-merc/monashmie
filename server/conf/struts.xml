@@ -76,7 +76,7 @@
             <result name="error" type="rawtext"/>
         </action>
     </package>
-    
+
     <package name="core.data" extends="core.merc" namespace="/data">
         <default-interceptor-ref name="authenStack"/>
         <action name="*">

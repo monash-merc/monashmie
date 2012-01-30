@@ -30,7 +30,9 @@ package edu.monash.merc.dao.impl;
 import edu.monash.merc.dao.HibernateGenericDAO;
 import edu.monash.merc.domain.Licence;
 import edu.monash.merc.repository.ILicenceRepository;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
@@ -57,4 +59,11 @@ public class LicenceDAO extends HibernateGenericDAO<Licence> implements ILicence
         query.executeUpdate();
     }
 
+    @Override
+    public Licence getLicenceByRegMetadataId(long regMdId) {
+        Criteria licenceCriteria = this.session().createCriteria(this.persistClass);
+        Criteria regMdCriteria = licenceCriteria.createCriteria("regMetadata");
+        regMdCriteria.add(Restrictions.eq("id", regMdId));
+        return (Licence) licenceCriteria.uniqueResult();
+    }
 }

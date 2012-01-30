@@ -28,7 +28,6 @@
 
 package edu.monash.merc.dto;
 
-import edu.monash.merc.domain.Licence;
 import edu.monash.merc.domain.RegMetadata;
 
 import java.io.Serializable;
@@ -42,13 +41,7 @@ import java.util.List;
  */
 public class MDRegistrationBean implements Serializable {
 
-    private List<PartyBean> partyList;
-
-    private List<ProjectBean> activityList;
-
     private RegMetadata regMetadata;
-
-    private Licence licence;
 
     private String accessRights;
 
@@ -66,21 +59,11 @@ public class MDRegistrationBean implements Serializable {
 
     private String rifcsGroupName;
 
-    public List<PartyBean> getPartyList() {
-        return partyList;
-    }
+    private List<PartyBean> partyBeans;
 
-    public void setPartyList(List<PartyBean> partyList) {
-        this.partyList = partyList;
-    }
+    private List<ActivityBean> activityBeans;
 
-    public List<ProjectBean> getActivityList() {
-        return activityList;
-    }
-
-    public void setActivityList(List<ProjectBean> activityList) {
-        this.activityList = activityList;
-    }
+    private LicenceBean licenceBean;
 
     public RegMetadata getRegMetadata() {
         return regMetadata;
@@ -88,14 +71,6 @@ public class MDRegistrationBean implements Serializable {
 
     public void setRegMetadata(RegMetadata regMetadata) {
         this.regMetadata = regMetadata;
-    }
-
-    public Licence getLicence() {
-        return licence;
-    }
-
-    public void setLicence(Licence licence) {
-        this.licence = licence;
     }
 
     public String getAccessRights() {
@@ -160,5 +135,29 @@ public class MDRegistrationBean implements Serializable {
 
     public void setRifcsGroupName(String rifcsGroupName) {
         this.rifcsGroupName = rifcsGroupName;
+    }
+
+    public List<PartyBean> getPartyBeans() {
+        return partyBeans;
+    }
+
+    public void setPartyBeans(List<PartyBean> partyBeans) {
+        this.partyBeans = partyBeans;
+    }
+
+    public List<ActivityBean> getActivityBeans() {
+        return activityBeans;
+    }
+
+    public void setActivityBeans(List<ActivityBean> activityBeans) {
+        this.activityBeans = activityBeans;
+    }
+
+    public LicenceBean getLicenceBean() {
+        return licenceBean;
+    }
+
+    public void setLicenceBean(LicenceBean licenceBean) {
+        this.licenceBean = licenceBean;
     }
 }

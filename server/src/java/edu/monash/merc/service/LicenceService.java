@@ -47,4 +47,6 @@ public interface LicenceService {
 
     public void deleteLicenceById(long id);
 
+    public Licence getLicenceByRegMetadataId(long regMdId);
+
 }

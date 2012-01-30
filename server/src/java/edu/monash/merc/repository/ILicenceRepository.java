@@ -27,6 +27,8 @@
  */
 package edu.monash.merc.repository;
 
+import edu.monash.merc.domain.Licence;
+
 /**
  * ILicenceRepository DAO Interface
  *
@@ -36,4 +38,6 @@ package edu.monash.merc.repository;
 public interface ILicenceRepository {
 
     public void deleteLicenceById(long id);
+
+    public Licence getLicenceByRegMetadataId(long regMdId);
 }

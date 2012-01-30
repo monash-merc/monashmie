@@ -30,13 +30,13 @@ package edu.monash.merc.common.service.rifcs.impl;
 
 import edu.monash.merc.common.service.rifcs.PartyActivityWSService;
 import edu.monash.merc.common.service.rifcs.RIFCSService;
-import edu.monash.merc.dto.ActivityBean;
+import edu.monash.merc.domain.RegMetadata;
 import edu.monash.merc.dto.MDRegistrationBean;
 import edu.monash.merc.dto.PartyBean;
-import edu.monash.merc.dto.ProjectBean;
 import edu.monash.merc.exception.RIFCSException;
 import edu.monash.merc.util.MercUtil;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -78,181 +78,136 @@ public class RIFCSServiceImpl implements RIFCSService {
 
     @Override
     public String publishExpRifcs(MDRegistrationBean mdRegistrationBean) {
-//        Experiment experiment = mdRegistrationBean.getExperiment();
+        RegMetadata regMetadata = mdRegistrationBean.getRegMetadata();
         StringBuilder rifcsBuilder = new StringBuilder();
-//        rifcsBuilder.append(getRifcsHeader());
-//        rifcsBuilder.append("<registryObject group=\"" + mdRegistrationBean.getRifcsGroupName() + "\">");
-//        rifcsBuilder.append(lineSeparator);
-//        String identifier = experiment.getPersistIdentifier();
-//        String key = identifier;
-//        if (key != null && StringUtils.contains(key, "/")) {
-//            key = "http://hdl.handle.net" + "/" + key;
-//        }
-//        rifcsBuilder.append("<key>" + key + "</key>");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append("<originatingSource>" + mdRegistrationBean.getAppName() + "</originatingSource>");
-//        rifcsBuilder.append(lineSeparator);
-//
-//        rifcsBuilder.append("<collection type=\"collection\">");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append("<identifier type=\"local\">" + experiment.getUniqueKey() + "</identifier>");
-//        rifcsBuilder.append(lineSeparator);
-//
-//        if (identifier != null && StringUtils.contains(identifier, "/")) {
-//            rifcsBuilder.append("<identifier type=\"handle\">" + identifier + "</identifier>");
-//            rifcsBuilder.append(lineSeparator);
-//        }
-//
-//        rifcsBuilder.append("<name type=\"primary\">");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append("<namePart>" + experiment.getName() + "</namePart>");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append("</name>");
-//        rifcsBuilder.append(lineSeparator);
-//        String electronicURL = mdRegistrationBean.getElectronicURL();
-//        if (StringUtils.isNotBlank(electronicURL)) {
-//            rifcsBuilder.append("<location>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<address>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<electronic type=\"url\">");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<value>" + mdRegistrationBean.getElectronicURL() + "</value>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</electronic>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</address>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</location>");
-//            rifcsBuilder.append(lineSeparator);
-//        }
-//        String physicalAddress = mdRegistrationBean.getPhysicalAddress();
-//        if (StringUtils.isNotBlank(physicalAddress)) {
-//            rifcsBuilder.append("<location>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<address>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<physical type=\"address\">");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<addressPart type=\"text\">" + mdRegistrationBean.getPhysicalAddress() + "</addressPart>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</physical>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</address>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</location>");
-//            rifcsBuilder.append(lineSeparator);
-//        }
-//
-//        List<PartyBean> partyBeans = mdRegistrationBean.getPartyList();
-//        StringBuilder relatedPartiesBuilder = new StringBuilder();
-//        for (PartyBean pb : partyBeans) {
-//            relatedPartiesBuilder.append("<relatedObject>");
-//            relatedPartiesBuilder.append(lineSeparator);
-//            relatedPartiesBuilder.append("<key>" + pb.getPartyKey() + "</key>");
-//            relatedPartiesBuilder.append(lineSeparator);
-//            relatedPartiesBuilder.append("<relation type=\"isManagedBy\" />");
-//            relatedPartiesBuilder.append(lineSeparator);
-//            relatedPartiesBuilder.append("</relatedObject>");
-//            relatedPartiesBuilder.append(lineSeparator);
-//        }
-//        String partiesXML = relatedPartiesBuilder.toString();
-//        if (StringUtils.isNotBlank(partiesXML)) {
-//            rifcsBuilder.append(partiesXML);
-//        }
-//
-//        List<ProjectBean> activitySummaryBeans = mdRegistrationBean.getActivityList();
-//        if (activitySummaryBeans != null) {
-//            StringBuilder relatedActsBuilder = new StringBuilder();
-//            for (ProjectBean projb : activitySummaryBeans) {
-//                relatedActsBuilder.append("<relatedObject>");
-//                relatedActsBuilder.append(lineSeparator);
-//                relatedActsBuilder.append("<key>" + projb.getActivityKey() + "</key>");
-//                relatedActsBuilder.append(lineSeparator);
-//                relatedActsBuilder.append("<relation type=\"isOutputOf\" />");
-//                relatedActsBuilder.append(lineSeparator);
-//                relatedActsBuilder.append("</relatedObject>");
-//                relatedActsBuilder.append(lineSeparator);
-//            }
-//            String actsXML = relatedActsBuilder.toString();
-//            if (StringUtils.isNotBlank(actsXML)) {
-//                rifcsBuilder.append(actsXML);
-//            }
-//        }
-//        String anzsrcCodes = mdRegistrationBean.getAnzsrcCode();
-//        List<String> codes = MercUtil.splitAnzsrcCode(anzsrcCodes);
-//        for (String code : codes) {
-//            rifcsBuilder.append("<subject  type=\"anzsrc-for\">" + code + "</subject>");
-//            rifcsBuilder.append(lineSeparator);
-//        }
-//        rifcsBuilder.append("<description type=\"rights\" xml:lang=\"en\">");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append(mdRegistrationBean.getLicence().getLicenceContents());
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append("</description>");
-//        rifcsBuilder.append(lineSeparator);
-//
-//        rifcsBuilder.append("<description type=\"brief\" xml:lang=\"en\">");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append(experiment.getDescription());
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append("</description>");
-//        rifcsBuilder.append(lineSeparator);
-//
-//        if (StringUtils.isNotBlank(mdRegistrationBean.getAccessRights())) {
-//            rifcsBuilder.append("<description type=\"accessRights\" xml:lang=\"en\">");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append(mdRegistrationBean.getAccessRights());
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</description>");
-//            rifcsBuilder.append(lineSeparator);
-//        }
-//        //RelatedInfo
-//        RelatedInfo relatedInfo = mdRegistrationBean.getRelatedInfo();
-//        if (relatedInfo != null) {
-//            rifcsBuilder.append("<relatedInfo type=\"" + relatedInfo.getType() + "\">");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<identifier type=\"" + relatedInfo.getIdentifierType() + "\">");
-//            rifcsBuilder.append(relatedInfo.getIdentifier());
-//            rifcsBuilder.append("</identifier>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<title>");
-//            rifcsBuilder.append(relatedInfo.getTitle());
-//            rifcsBuilder.append("</title>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("<notes>");
-//            rifcsBuilder.append(relatedInfo.getNotes());
-//            rifcsBuilder.append("</notes>");
-//            rifcsBuilder.append(lineSeparator);
-//            rifcsBuilder.append("</relatedInfo>");
-//            rifcsBuilder.append(lineSeparator);
-//        }
-//        rifcsBuilder.append("</collection>");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append("</registryObject>");
-//        rifcsBuilder.append(lineSeparator);
-//        rifcsBuilder.append(getRifcsEnder());
-//        String rifcsStoreLocation = mdRegistrationBean.getRifcsStoreLocation();
-//
-//        synchronized (fileLock) {
-//            File rifcsFile = new File(rifcsStoreLocation + File.separator + experiment.getUniqueKey() + ".xml");
-//            try {
-//                // publish collection
-//                FileUtils.writeStringToFile(rifcsFile, rifcsBuilder.toString());
-//
-//                // publish parties
-//                publishPartyRifcs(mdRegistrationBean);
-//
-//                // publish activities
-//                publishActivityRifc(mdRegistrationBean);
-//
-//            } catch (Exception e) {
-//                logger.error(e);
-//                throw new RIFCSException(e);
-//            }
-//
-//        }
+        rifcsBuilder.append(getRifcsHeader());
+        rifcsBuilder.append("<registryObject group=\"" + mdRegistrationBean.getRifcsGroupName() + "\">");
+        rifcsBuilder.append(lineSeparator);
+        String identifier = regMetadata.getUniqueId();
 
+        rifcsBuilder.append("<key>" + identifier + "</key>");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append("<originatingSource>" + mdRegistrationBean.getAppName() + "</originatingSource>");
+        rifcsBuilder.append(lineSeparator);
+
+        rifcsBuilder.append("<collection type=\"dataset\">");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append("<identifier type=\"local\">" + identifier + "</identifier>");
+        rifcsBuilder.append(lineSeparator);
+
+
+        rifcsBuilder.append("<name type=\"primary\">");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append("<namePart>" + regMetadata.getTitle() + "</namePart>");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append("</name>");
+        rifcsBuilder.append(lineSeparator);
+        String electronicURL = mdRegistrationBean.getElectronicURL();
+        if (StringUtils.isNotBlank(electronicURL)) {
+            rifcsBuilder.append("<location>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("<address>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("<electronic type=\"url\">");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("<value>" + mdRegistrationBean.getElectronicURL() + "</value>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("</electronic>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("</address>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("</location>");
+            rifcsBuilder.append(lineSeparator);
+        }
+        String physicalAddress = mdRegistrationBean.getPhysicalAddress();
+        if (StringUtils.isNotBlank(physicalAddress)) {
+            rifcsBuilder.append("<location>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("<address>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("<physical type=\"address\">");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("<addressPart type=\"text\">" + mdRegistrationBean.getPhysicalAddress() + "</addressPart>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("</physical>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("</address>");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("</location>");
+            rifcsBuilder.append(lineSeparator);
+        }
+
+        List<PartyBean> partyBeans = mdRegistrationBean.getPartyBeans();
+        StringBuilder relatedPartiesBuilder = new StringBuilder();
+        for (PartyBean pb : partyBeans) {
+            relatedPartiesBuilder.append("<relatedObject>");
+            relatedPartiesBuilder.append(lineSeparator);
+            relatedPartiesBuilder.append("<key>" + pb.getPartyKey() + "</key>");
+            relatedPartiesBuilder.append(lineSeparator);
+            relatedPartiesBuilder.append("<relation type=\"isManagedBy\" />");
+            relatedPartiesBuilder.append(lineSeparator);
+            relatedPartiesBuilder.append("</relatedObject>");
+            relatedPartiesBuilder.append(lineSeparator);
+        }
+        String partiesXML = relatedPartiesBuilder.toString();
+        if (StringUtils.isNotBlank(partiesXML)) {
+            rifcsBuilder.append(partiesXML);
+        }
+
+
+        String anzsrcCodes = mdRegistrationBean.getAnzsrcCode();
+        List<String> codes = MercUtil.splitAnzsrcCode(anzsrcCodes);
+        for (String code : codes) {
+            rifcsBuilder.append("<subject  type=\"anzsrc-for\">" + code + "</subject>");
+            rifcsBuilder.append(lineSeparator);
+        }
+        rifcsBuilder.append("<description type=\"rights\" xml:lang=\"en\">");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append(mdRegistrationBean.getLicenceBean().getLicenceContents());
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append("</description>");
+        rifcsBuilder.append(lineSeparator);
+
+        rifcsBuilder.append("<description type=\"brief\" xml:lang=\"en\">");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append(regMetadata.getDescription());
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append("</description>");
+        rifcsBuilder.append(lineSeparator);
+
+        if (StringUtils.isNotBlank(mdRegistrationBean.getAccessRights())) {
+            rifcsBuilder.append("<description type=\"accessRights\" xml:lang=\"en\">");
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append(mdRegistrationBean.getAccessRights());
+            rifcsBuilder.append(lineSeparator);
+            rifcsBuilder.append("</description>");
+            rifcsBuilder.append(lineSeparator);
+        }
+
+        rifcsBuilder.append("</collection>");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append("</registryObject>");
+        rifcsBuilder.append(lineSeparator);
+        rifcsBuilder.append(getRifcsEnder());
+        String rifcsStoreLocation = mdRegistrationBean.getRifcsStoreLocation();
+
+        synchronized (fileLock) {
+            File rifcsFile = new File(rifcsStoreLocation + File.separator + regMetadata.getUniqueId() + ".xml");
+            try {
+                // publish collection
+                FileUtils.writeStringToFile(rifcsFile, rifcsBuilder.toString());
+
+                // publish parties
+                publishPartyRifcs(mdRegistrationBean);
+
+                // publish activities
+                publishActivityRifc(mdRegistrationBean);
+
+            } catch (Exception e) {
+                logger.error(e);
+                throw new RIFCSException(e);
+            }
+        }
         return rifcsBuilder.toString();
     }
 
@@ -275,7 +230,7 @@ public class RIFCSServiceImpl implements RIFCSService {
     }
 
     private void publishPartyRifcs(MDRegistrationBean mdRegistrationBean) {
-        List<PartyBean> partyBeans = mdRegistrationBean.getPartyList();
+        List<PartyBean> partyBeans = mdRegistrationBean.getPartyBeans();
         for (PartyBean p : partyBeans) {
             try {
                 String rifcs = null;
@@ -311,8 +266,7 @@ public class RIFCSServiceImpl implements RIFCSService {
         rifcsBuilder.append(lineSeparator);
         rifcsBuilder.append("<key>" + pb.getPartyKey() + "</key>");
         rifcsBuilder.append(lineSeparator);
-        rifcsBuilder.append("<originatingSource type=\"" + pb.getOriginateSourceType() + "\">" + pb.getOriginateSourceValue()
-                + "</originatingSource>");
+        rifcsBuilder.append("<originatingSource type=\"" + pb.getOriginateSourceType() + "\">" + pb.getOriginateSourceValue() + "</originatingSource>");
         rifcsBuilder.append(lineSeparator);
         Date date = GregorianCalendar.getInstance().getTime();
         String dateModified = MercUtil.formatDateToUTC(date);
@@ -365,25 +319,6 @@ public class RIFCSServiceImpl implements RIFCSService {
     }
 
     private void publishActivityRifc(MDRegistrationBean mdRegistrationBean) {
-        List<ProjectBean> projBeans = mdRegistrationBean.getActivityList();
-        if (projBeans != null) {
-            for (ProjectBean p : projBeans) {
-                ActivityBean ab = this.paWsService.getActivity(p.getActivityKey());
-                String rifcsContents = ab.getRifcsContent();
-                StringBuilder rifcsbuilder = new StringBuilder();
-                rifcsbuilder.append(getRifcsHeader());
-                rifcsbuilder.append(rifcsContents);
-                rifcsbuilder.append(getRifcsEnder());
-
-                try {
-                    File rifcsFile = new File(mdRegistrationBean.getRifcsStoreLocation() + File.separator + MercUtil.pathEncode(p.getActivityKey())
-                            + ".xml");
-                    FileUtils.writeStringToFile(rifcsFile, rifcsbuilder.toString());
-                } catch (Exception e) {
-                    logger.error(e);
-                    throw new RIFCSException(e);
-                }
-            }
-        }
+        //TODO: next version
     }
 }

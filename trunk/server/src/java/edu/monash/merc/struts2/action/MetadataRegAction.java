@@ -105,7 +105,7 @@ public class MetadataRegAction extends DMBaseAction {
 
             //do a validation before publish the metadata
             if (!validateMdRegInfo()) {
-                stringResult = genErrorMsg("dataset.metadata.reg.invalid.metadata.info");
+                stringResult = genErrorMsg(getText("dataset.metadata.reg.invalid.metadata.info"));
                 return ERROR;
             }
             //get the previous RegMetadata if any

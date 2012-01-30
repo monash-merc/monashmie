@@ -163,7 +163,7 @@ public class MetadataRegAction extends DMBaseAction {
     }
 
     private boolean validateMdRegInfo() {
-
+        //TODO: to add validation for the metata registration info
 
         return true;
     }

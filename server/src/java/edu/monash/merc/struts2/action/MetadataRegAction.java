@@ -84,6 +84,8 @@ public class MetadataRegAction extends DMBaseAction {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
+    private String lineSeparator = (String) java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
+
     public void setIdentifierService(IdentifierServiceImpl identifierService) {
         this.identifierService = identifierService;
     }
@@ -167,13 +169,35 @@ public class MetadataRegAction extends DMBaseAction {
     }
 
     private String genErrorMsg(String errorMsg) {
-        String tempErr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><error>" + errorMsg + "</error>";
-        return tempErr;
+        StringBuilder responseBuilder = new StringBuilder();
+        responseBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("<responseStatus>");
+        responseBuilder.append("ERROR");
+        responseBuilder.append("</responseStatus>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("<message>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append(errorMsg);
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("</message>");
+        return responseBuilder.toString();
     }
 
     private String genSuccessMsg(String successMsg) {
-        String tempSuc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><success>" + successMsg + "</success>";
-        return tempSuc;
+        StringBuilder responseBuilder = new StringBuilder();
+        responseBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("<responseStatus>");
+        responseBuilder.append("SUCCESS");
+        responseBuilder.append("</responseStatus>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("<message>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append(successMsg);
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("</message>");
+        return responseBuilder.toString();
     }
 
     public List<PartyBean> getPartyBeans() {

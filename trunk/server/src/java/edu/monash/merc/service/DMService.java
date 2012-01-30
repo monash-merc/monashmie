@@ -73,7 +73,7 @@ public interface DMService {
 
     public void updateLicence(Licence licence);
 
-    public Licence getLicenceByExpId(long expId);
+    public Licence getLicenceByRegMetadataId(long regMdId);
 
     public Licence getLicenceById(long lId);
 

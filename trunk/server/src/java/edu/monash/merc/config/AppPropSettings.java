@@ -62,6 +62,8 @@ public class AppPropSettings {
 
     public static String ANDS_RIFCS_PHYSICAL_LOCATION = "ands.rifcs.physical.location";
 
+    public static String ANDS_RIFCS_DATASET_ACCESS_RIGHTS = "ands.rifcs.dataset.access.rights";
+
     public static String EXPERIMENT_UUID_PREFIX = "ands.rifcs.uuid.prefix";
 
     public static String ANDS_RIFCS_REG_GROUP_NAME = "ands.rifcs.register.group.name";

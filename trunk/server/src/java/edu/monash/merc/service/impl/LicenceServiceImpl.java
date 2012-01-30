@@ -106,4 +106,8 @@ public class LicenceServiceImpl implements LicenceService {
         this.licenceDao.deleteLicenceById(id);
     }
 
+    @Override
+    public Licence getLicenceByRegMetadataId(long regMdId) {
+        return this.licenceDao.getLicenceByRegMetadataId(regMdId);
+    }
 }

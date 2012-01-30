@@ -65,7 +65,8 @@ public class Licence extends Domain {
     @Column(name = "contents", length = 2000)
     private String licenceContents;
 
-    @OneToOne(mappedBy = "licence")
+    @OneToOne(targetEntity = RegMetadata.class)
+    @JoinColumn(name = "regmetadata_id", referencedColumnName = "id", nullable = false)
     private RegMetadata regMetadata;
 
     /**

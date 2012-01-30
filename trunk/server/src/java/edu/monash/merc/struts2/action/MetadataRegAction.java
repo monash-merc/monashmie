@@ -28,28 +28,27 @@
 
 package edu.monash.merc.struts2.action;
 
-import edu.monash.merc.common.service.ldap.LDAPService;
-import edu.monash.merc.common.service.rifcs.PartyActivityWSService;
-import edu.monash.merc.domain.Activity;
-import edu.monash.merc.domain.Licence;
-import edu.monash.merc.domain.Party;
+import edu.monash.merc.common.service.pid.impl.IdentifierServiceImpl;
+import edu.monash.merc.config.AppPropSettings;
+import edu.monash.merc.domain.RegMetadata;
+import edu.monash.merc.dto.ActivityBean;
+import edu.monash.merc.dto.LicenceBean;
+import edu.monash.merc.dto.MDRegistrationBean;
 import edu.monash.merc.dto.PartyBean;
-import edu.monash.merc.dto.ProjectBean;
+import edu.monash.merc.service.DMService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * MetadataRegAction Action class
  *
  * @author Simon Yu - Xiaoming.Yu@monash.edu
- * Modified by Sindhu Emilda - sindhu.emilda@monash.edu
+ *         Modified by Sindhu Emilda - sindhu.emilda@monash.edu
  * @version 2.0
  */
 @Scope("prototype")
@@ -57,36 +56,41 @@ import java.util.Map;
 public class MetadataRegAction extends DMBaseAction {
 
     @Autowired
-    private PartyActivityWSService paWsService;
+    private IdentifierServiceImpl identifierService;
 
     @Autowired
-    private LDAPService ldapService;
+    private DMService dmService;
 
-    private String authencatId;
+    private List<PartyBean> partyBeans;
 
-    private String nlaId;
+    private List<ActivityBean> activityBeans;
 
-    private List<PartyBean> partyList;
-
-    private List<ProjectBean> projectList;
-
-    private Licence licence;
+    private LicenceBean licenceBean;
 
     private String accessRights;
-
-    private Map<String, String> addPartyTypeMap = new LinkedHashMap<String, String>();
-
-    private String addPartyType;
 
     private String anzSrcCode;
 
     private String physicalAddress;
 
-    private PartyBean addedPartyBean;
-    
+    private String groupName;
+
+    private String appName;
+
+    private RegMetadata regMetadata;
+
+    //action response
     private String stringResult;
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
+
+    public void setIdentifierService(IdentifierServiceImpl identifierService) {
+        this.identifierService = identifierService;
+    }
+
+    public void setDmService(DMService dmService) {
+        this.dmService = dmService;
+    }
 
     public String showMdReg() {
 
@@ -94,126 +98,106 @@ public class MetadataRegAction extends DMBaseAction {
         return SUCCESS;
     }
 
-
-    public String addRMParty() {
-
-        return SUCCESS;
-    }
-
-    public String addUDParty() {
-
-        return SUCCESS;
-    }
-
-
     public String mdReg() {
+        try {
 
-    	stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>Data</test>";
+            //do a validation before publish the metadata
+            if (!validateMdRegInfo()) {
+                stringResult = genErrorMsg("dataset.metadata.reg.invalid.metadata.info");
+                return ERROR;
+            }
+            //get the previous RegMetadata if any
+            RegMetadata previousRegMetadata = this.dmService.getRegMetadatadByDatasetId(regMetadata.getDatasetId());
+            //if previous RegMetadata existed
+            if (previousRegMetadata != null) {
+                regMetadata.setId(previousRegMetadata.getId());
+                regMetadata.setUniqueId(previousRegMetadata.getUniqueId());
+            }
+
+            //generate the rifcs unique id if required
+            if (StringUtils.isBlank(regMetadata.getUniqueId())) {
+                String monUuid = this.identifierService.genUUIDWithPrefix();
+                regMetadata.setUniqueId(monUuid);
+            }
+
+            //populate the static value
+            this.physicalAddress = appSetting.getPropValue(AppPropSettings.ANDS_RIFCS_PHYSICAL_LOCATION);
+            this.anzSrcCode = appSetting.getPropValue(AppPropSettings.ANDS_RIFCS_REG_ANZSRC_CODE);
+            this.groupName = appSetting.getPropValue(AppPropSettings.ANDS_RIFCS_REG_GROUP_NAME);
+            this.accessRights = appSetting.getPropValue(AppPropSettings.ANDS_RIFCS_DATASET_ACCESS_RIGHTS);
+            this.appName = getServerQName();
+
+            //create a new MDRegistrationBean
+            MDRegistrationBean mdRegBean = new MDRegistrationBean();
+            //set rifcs group name
+            mdRegBean.setRifcsGroupName(this.groupName);
+            //set access rights
+            mdRegBean.setAccessRights(this.accessRights);
+            //set the anzsrc code
+            mdRegBean.setAnzsrcCode(this.anzSrcCode);
+            //set the application name for originating source name
+            mdRegBean.setAppName(this.appName);
+            //set the application name for the electronic url
+            mdRegBean.setElectronicURL(this.appName);
+            //set the party beans
+            mdRegBean.setPartyBeans(this.partyBeans);
+            //set the activity beans
+            mdRegBean.setActivityBeans(this.activityBeans);
+            //set the licence bean
+            mdRegBean.setLicenceBean(this.licenceBean);
+
+            //save the metadata registration
+            this.dmService.saveRegMetadata(mdRegBean);
+
+            //success message
+            stringResult = genSuccessMsg(getText("dataset.metadata.reg.success.message"));
+        } catch (Exception ex) {
+            logger.error(ex);
+            //error message
+            stringResult = genErrorMsg(getText("dataset.metadata.reg.action.failed"));
+            return ERROR;
+        }
         return SUCCESS;
     }
 
-    private void populateAllParties(List<Party> existedParties, PartyBean rmpb) {
-        if (partyList == null) {
-            partyList = new ArrayList<PartyBean>();
-            // add the rm party
-            if (rmpb != null) {
-                partyList.add(rmpb);
-            }
-        }
-        if (existedParties != null && existedParties.size() > 0) {
-            for (Party party : existedParties) {
-                String partykey = party.getPartyKey();
-                // create a previous PartyBean
-                PartyBean existedParty = copyPartyToPartyBean(party);
-                existedParty.setSelected(true);
-                // if rmpb is not null, then we compare it with exsited parties which previous populated
-                // if key is not the same, then we add it into the list,
-                // if rmpb is null, then we add all existed parties
-                if (rmpb != null) {
-                    String rmPbKey = rmpb.getPartyKey();
-                    if (!rmPbKey.equals(partykey)) {
-                        partyList.add(existedParty);
-                    }
-                } else {
-                    partyList.add(existedParty);
-                }
-            }
-        }
+    private boolean validateMdRegInfo() {
+
+
+        return true;
     }
 
-    private void popilateAllActivities(List<Activity> existedActivities, List<ProjectBean> rmProjList) {
-        // sign the rm project summary list to project list
-        projectList = rmProjList;
-        if (projectList != null && projectList.size() > 0) {
-            for (ProjectBean projb : projectList) {
-                if (existedActivities != null && existedActivities.size() > 0) {
-                    for (Activity a : existedActivities) {
-                        if (projb.getActivityKey().equals(a.getActivityKey())) {
-                            projb.setSelected(true);
-                        }
-                    }
-                }
-            }
-        }
+    private String genErrorMsg(String errorMsg) {
+        String tempErr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><error>" + errorMsg + "</error>";
+        return tempErr;
     }
 
-    private PartyBean copyPartyToPartyBean(Party p) {
-        PartyBean pb = new PartyBean();
-        pb.setPartyKey(p.getPartyKey());
-        pb.setPersonTitle(p.getPersonTitle());
-        pb.setPersonGivenName(p.getPersonGivenName());
-        pb.setPersonFamilyName(p.getPersonFamilyName());
-        pb.setUrl(p.getUrl());
-        pb.setEmail(p.getEmail());
-        pb.setAddress(p.getAddress());
-        pb.setIdentifierType(p.getIdentifierType());
-        pb.setIdentifierValue(p.getIdentifierValue());
-        pb.setOriginateSourceType(p.getOriginateSourceType());
-        pb.setOriginateSourceValue(p.getOriginateSourceValue());
-        pb.setGroupName(p.getGroupName());
-        pb.setFromRm(p.isFromRm());
-        return pb;
+    private String genSuccessMsg(String successMsg) {
+        String tempSuc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><success>" + successMsg + "</success>";
+        return tempSuc;
     }
 
-
-    public void setPaWsService(PartyActivityWSService paWsService) {
-        this.paWsService = paWsService;
+    public List<PartyBean> getPartyBeans() {
+        return partyBeans;
     }
 
-    public void setLdapService(LDAPService ldapService) {
-        this.ldapService = ldapService;
+    public void setPartyBeans(List<PartyBean> partyBeans) {
+        this.partyBeans = partyBeans;
     }
 
-    public String getNlaId() {
-        return nlaId;
+    public List<ActivityBean> getActivityBeans() {
+        return activityBeans;
     }
 
-    public void setNlaId(String nlaId) {
-        this.nlaId = nlaId;
+    public void setActivityBeans(List<ActivityBean> activityBeans) {
+        this.activityBeans = activityBeans;
     }
 
-    public List<PartyBean> getPartyList() {
-        return partyList;
+    public LicenceBean getLicenceBean() {
+        return licenceBean;
     }
 
-    public void setPartyList(List<PartyBean> partyList) {
-        this.partyList = partyList;
-    }
-
-    public List<ProjectBean> getProjectList() {
-        return projectList;
-    }
-
-    public void setProjectList(List<ProjectBean> projectList) {
-        this.projectList = projectList;
-    }
-
-    public Licence getLicence() {
-        return licence;
-    }
-
-    public void setLicence(Licence licence) {
-        this.licence = licence;
+    public void setLicenceBean(LicenceBean licenceBean) {
+        this.licenceBean = licenceBean;
     }
 
     public String getAccessRights() {
@@ -222,22 +206,6 @@ public class MetadataRegAction extends DMBaseAction {
 
     public void setAccessRights(String accessRights) {
         this.accessRights = accessRights;
-    }
-
-    public Map<String, String> getAddPartyTypeMap() {
-        return addPartyTypeMap;
-    }
-
-    public void setAddPartyTypeMap(Map<String, String> addPartyTypeMap) {
-        this.addPartyTypeMap = addPartyTypeMap;
-    }
-
-    public String getAddPartyType() {
-        return addPartyType;
-    }
-
-    public void setAddPartyType(String addPartyType) {
-        this.addPartyType = addPartyType;
     }
 
     public String getAnzSrcCode() {
@@ -256,22 +224,35 @@ public class MetadataRegAction extends DMBaseAction {
         this.physicalAddress = physicalAddress;
     }
 
-    public PartyBean getAddedPartyBean() {
-        return addedPartyBean;
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setAddedPartyBean(PartyBean addedPartyBean) {
-        this.addedPartyBean = addedPartyBean;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
+    public String getAppName() {
+        return appName;
+    }
 
-	public String getStringResult() {
-		return stringResult;
-	}
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
 
+    public RegMetadata getRegMetadata() {
+        return regMetadata;
+    }
 
-	public void setStringResult(String stringResult) {
-		this.stringResult = stringResult;
-	}
-    
+    public void setRegMetadata(RegMetadata regMetadata) {
+        this.regMetadata = regMetadata;
+    }
+
+    public String getStringResult() {
+        return stringResult;
+    }
+
+    public void setStringResult(String stringResult) {
+        this.stringResult = stringResult;
+    }
 }

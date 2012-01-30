@@ -27,15 +27,17 @@
  */
 package edu.monash.merc.service.impl;
 
-import edu.monash.merc.common.service.file.FileSystemSerivce;
+import edu.monash.merc.common.service.pid.impl.IdentifierServiceImpl;
 import edu.monash.merc.common.service.rifcs.RIFCSService;
 import edu.monash.merc.domain.Activity;
 import edu.monash.merc.domain.Licence;
 import edu.monash.merc.domain.Party;
 import edu.monash.merc.domain.RegMetadata;
+import edu.monash.merc.dto.LicenceBean;
 import edu.monash.merc.dto.MDRegistrationBean;
 import edu.monash.merc.dto.PartyBean;
 import edu.monash.merc.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -69,7 +71,7 @@ public class DMServiceImpl implements DMService {
     private LicenceService licenceService;
 
     @Autowired
-    private FileSystemSerivce fileService;
+    private IdentifierServiceImpl identifierService;
 
     @Autowired
     private RIFCSService rifcsService;
@@ -78,13 +80,9 @@ public class DMServiceImpl implements DMService {
         this.regMetadataService = regMetadataService;
     }
 
-    /**
-     * @param fileService the fileService to set
-     */
-    public void setFileService(FileSystemSerivce fileService) {
-        this.fileService = fileService;
+    public void setIdentifierService(IdentifierServiceImpl identifierService) {
+        this.identifierService = identifierService;
     }
-
 
     public void setPartyService(PartyService partyService) {
         this.partyService = partyService;
@@ -178,8 +176,8 @@ public class DMServiceImpl implements DMService {
     }
 
     @Override
-    public Licence getLicenceByExpId(long expId) {
-        return null;
+    public Licence getLicenceByRegMetadataId(long regMdId) {
+        return this.licenceService.getLicenceByRegMetadataId(regMdId);
     }
 
     @Override
@@ -189,9 +187,8 @@ public class DMServiceImpl implements DMService {
 
     @Override
     public void saveRegMetadata(MDRegistrationBean mdRegistrationBean) {
-
-        //TODO:
-        List<PartyBean> partyList = mdRegistrationBean.getPartyList();
+        //save the party
+        List<PartyBean> partyList = mdRegistrationBean.getPartyBeans();
         // parties
         List<Party> parties = new ArrayList<Party>();
         for (PartyBean partybean : partyList) {
@@ -200,8 +197,13 @@ public class DMServiceImpl implements DMService {
                 // search the party detail by the person's first name and last name from the database;
                 p = getPartyByUsrNameAndEmail(partybean.getPersonGivenName(), partybean.getPersonFamilyName(), partybean.getEmail());
             } else {
-                // search the party detail by the party's key
-                p = getPartyByPartyKey(partybean.getPartyKey());
+                String partyKey = partybean.getPartyKey();
+                if (StringUtils.isNotBlank(partyKey)) {
+                    // search the party detail by the party's key
+                    p = getPartyByPartyKey(partybean.getPartyKey());
+                } else {
+                    partybean.setPartyKey(this.identifierService.genUUIDWithPrefix());
+                }
             }
             // if party not found from the database, we just save it into database;
             if (p == null) {
@@ -210,9 +212,43 @@ public class DMServiceImpl implements DMService {
             }
             parties.add(p);
         }
+        RegMetadata regMetadata = mdRegistrationBean.getRegMetadata();
+        //add the parties
+        regMetadata.setParties(parties);
+        //persist the RegMetadata (save or update)
+        if (regMetadata.getId() == 0) {
+            this.saveRegMetadata(regMetadata);
+        } else {
+            this.updateRegMetadata(regMetadata);
+        }
 
-        //register the metada:
+        //save the licence:
+        LicenceBean licenceBean = mdRegistrationBean.getLicenceBean();
+        Licence licence = copyLicenceBeanToLicence(licenceBean);
+        licence.setRegMetadata(regMetadata);
+        if (licence.getId() == 0) {
+            Licence existedLicence = this.getLicenceByRegMetadataId(regMetadata.getId());
+            if (existedLicence != null) {
+                licence.setId(existedLicence.getId());
+                this.updateLicence(licence);
+            } else {
+                this.saveLicence(licence);
+            }
+        } else {
+            this.updateLicence(licence);
+        }
+        //publish the rifcs
         this.rifcsService.publishExpRifcs(mdRegistrationBean);
+    }
+
+    private Licence copyLicenceBeanToLicence(LicenceBean licenceBean) {
+        Licence licence = new Licence();
+        licence.setLicenceType(licenceBean.getLicenceType());
+        licence.setCommercial(licenceBean.getCommercial());
+        licence.setDerivatives(licenceBean.getDerivatives());
+        licence.setJurisdiction(licenceBean.getJurisdiction());
+        licence.setLicenceContents(licenceBean.getLicenceContents());
+        return licence;
     }
 
     private Party copyPartyBeanToParty(PartyBean pb) {

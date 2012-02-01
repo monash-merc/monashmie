@@ -172,15 +172,17 @@ public class MetadataRegAction extends DMBaseAction {
         StringBuilder responseBuilder = new StringBuilder();
         responseBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         responseBuilder.append(lineSeparator);
-        responseBuilder.append("<responseStatus>");
+        responseBuilder.append("<response>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("<status>");
         responseBuilder.append("ERROR");
-        responseBuilder.append("</responseStatus>");
+        responseBuilder.append("</status>");
         responseBuilder.append(lineSeparator);
         responseBuilder.append("<message>");
-        responseBuilder.append(lineSeparator);
         responseBuilder.append(errorMsg);
-        responseBuilder.append(lineSeparator);
         responseBuilder.append("</message>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("</response>");
         return responseBuilder.toString();
     }
 
@@ -188,15 +190,19 @@ public class MetadataRegAction extends DMBaseAction {
         StringBuilder responseBuilder = new StringBuilder();
         responseBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         responseBuilder.append(lineSeparator);
-        responseBuilder.append("<responseStatus>");
+        responseBuilder.append("<response>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("<status>");
         responseBuilder.append("SUCCESS");
-        responseBuilder.append("</responseStatus>");
+        responseBuilder.append("</status>");
         responseBuilder.append(lineSeparator);
         responseBuilder.append("<message>");
         responseBuilder.append(lineSeparator);
         responseBuilder.append(successMsg);
         responseBuilder.append(lineSeparator);
         responseBuilder.append("</message>");
+        responseBuilder.append(lineSeparator);
+        responseBuilder.append("</response>");
         return responseBuilder.toString();
     }
 

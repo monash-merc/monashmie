@@ -67,11 +67,11 @@ public class LoginAction extends DMBaseAction {
 			boolean succeed = this.ldapService.ldapUserLogin(userName, password);
 			
 			if (succeed) {
-				stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>Ok</test>";
+				stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><status>SUCCESS</status>";
 				storeInSession(ActionConts.SESS_AUTHENTICATION_FLAG, ActionConts.SESS_AUTHENCATED);
 			}
 		} catch (Exception ex) {
-			stringResult = "";// error xml
+			stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><status>ERROR</status>";
 			logger.error(ex.getMessage());
 			return ERROR;
 		}

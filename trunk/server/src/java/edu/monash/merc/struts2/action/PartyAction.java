@@ -71,71 +71,67 @@ public class PartyAction extends DMBaseAction {
 
 	public String searchParty() {
 
+		String authcateId = null;
 		try {
-			boolean succeed = true;
-
 			LDAPUser user = this.ldapService.searchLdapUser(party);
 
-			String nlaId = null;
 			// get researcher nla id from rm ws
-			try {
-				String authcateId = user.getUid();
-				System.out.println("authcateId: " + authcateId);
-				
-				nlaId = this.partyActivitySvc.getNlaId(authcateId);
-				System.out.println("nlaId: " + nlaId);
-				
-			} catch (Exception e) {
-				System.out.println(getText("party.nlaid.notfound"));
-				String errorMsg = e.getMessage();
-				logger.error(getText("party.nlaid.notfound") + ", " + e);
-				boolean keepdoing = false;
-				if (StringUtils.containsIgnoreCase(errorMsg, "NLA Id not found") || 
-						StringUtils.containsIgnoreCase(errorMsg, "Invalid authcate username")) {
-					// construct reply
-					succeed = false;
-				} else {
-					// construct reply
-					succeed = false;
-				}
-			}
+			authcateId = user.getUid();
+			System.out.println("authcateId: " + authcateId);
+
+			String nlaId = this.partyActivitySvc.getNlaId(authcateId);
+			System.out.println("nlaId: " + nlaId);
 
 			// get the researcher party from rm ws
-			PartyBean partyBean = null;
-			if (nlaId != null) {
-				try {
-					partyBean = this.partyActivitySvc.getParty(nlaId);
-					System.out.println("partyBean: " + partyBean.toString());
-				} catch (Exception e) {
-					System.out.println(getText("party.info.notfound"));
-					String errorMsg = e.getMessage();
-					logger.error(getText("party.info.notfound") + ", " + e);
-
-					if (StringUtils.containsIgnoreCase(errorMsg, "Invalid party id")) {
-						// construct reply
-						succeed = false;
-					} else {
-						// construct reply
-						succeed = false;
-					}
+			PartyBean partyBean = this.partyActivitySvc.getParty(nlaId);
+			System.out.println("partyBean: " + partyBean.toString());
+			String rifcsContent = partyBean.getRifcsContent();
+			stringResult = genSuccessMsg(rifcsContent);
+		} catch (Exception e) {
+			String errorMsg = e.getMessage();
+			String errorMessage;
+			if (StringUtils.containsIgnoreCase(errorMsg, "NLA Id not found") || 
+					StringUtils.containsIgnoreCase(errorMsg, "Invalid authcate username")) {
+				errorMessage = getText("party.nlaid.notfound");
+			} else	if (StringUtils.containsIgnoreCase(errorMsg, "Invalid party id")) {
+				errorMessage = getText("party.info.notfound");
+			} else {
+				if (null == authcateId) {
+					errorMessage = getText("ldap.user.notfound");
+				} else {
+					errorMessage = getText("error.researchmaster");
 				}
 			}
-
-			if (succeed) {
-				stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>Ok</test>";
-				//storeInSession(ActionConts.SESS_AUTHENTICATION_FLAG, ActionConts.SESS_AUTHENCATED);
-			} else {
-				stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>Error</test>";
-			}
-		} catch (Exception ex) {
-			System.out.println(getText("ldap.user.notfound"));
-			//stringResult = "";// error xml
-			stringResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>Error</test>";
-			logger.error(getText("ldap.user.notfound") + ", " + ex);
+			logger.error(errorMessage);
+			stringResult = genErrorMsg(errorMessage);
 			return ERROR;
 		}
 
 		return SUCCESS;
+	}
+
+	private String genSuccessMsg(String successMsg) {
+		StringBuilder responseBuilder = new StringBuilder();
+		responseBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		responseBuilder.append("<response>");
+		responseBuilder.append("<status>SUCCESS</status>");
+		responseBuilder.append("<message>");
+        responseBuilder.append(successMsg);
+        responseBuilder.append("</message>");
+        responseBuilder.append("</response>");
+		return responseBuilder.toString();
+	}
+
+	private String genErrorMsg(String errorMsg) {
+		StringBuilder responseBuilder = new StringBuilder();
+		responseBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		responseBuilder.append("<response>");
+		responseBuilder.append("<status>ERROR</status>");
+		responseBuilder.append("<message>");
+		responseBuilder.append(errorMsg);
+		responseBuilder.append("</message>");
+		responseBuilder.append("</response>");
+		return responseBuilder.toString();
 	}
 
 	public String getStringResult() {

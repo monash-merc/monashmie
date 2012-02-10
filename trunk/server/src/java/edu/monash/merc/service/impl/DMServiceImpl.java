@@ -170,6 +170,11 @@ public class DMServiceImpl implements DMService {
     public void saveLicence(Licence licence) {
         this.licenceService.saveLicence(licence);
     }
+    
+    @Override
+    public void mergeLicence(Licence licence){
+    	this.licenceService.mergeLicence(licence);	
+    }
 
     @Override
     public void updateLicence(Licence licence) {
@@ -222,7 +227,6 @@ public class DMServiceImpl implements DMService {
         } else {
             this.updateRegMetadata(regMetadata);
         }
-
         //save the licence:
         LicenceBean licenceBean = mdRegistrationBean.getLicenceBean();
         Licence licence = copyLicenceBeanToLicence(licenceBean);
@@ -231,7 +235,7 @@ public class DMServiceImpl implements DMService {
             Licence existedLicence = this.getLicenceByRegMetadataId(regMetadata.getId());
             if (existedLicence != null) {
                 licence.setId(existedLicence.getId());
-                this.updateLicence(licence);
+                this.mergeLicence(licence);
             } else {
                 this.saveLicence(licence);
             }

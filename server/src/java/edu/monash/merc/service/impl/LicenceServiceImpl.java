@@ -46,68 +46,78 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LicenceServiceImpl implements LicenceService {
 
-    @Autowired
-    private LicenceDAO licenceDao;
+	@Autowired
+	private LicenceDAO licenceDao;
 
-    /**
-     * @param licenceDao the licenceDao to set
-     */
-    public void setLicenceDao(LicenceDAO licenceDao) {
-        this.licenceDao = licenceDao;
-    }
+	/**
+	 * @param licenceDao the licenceDao to set
+	 */
+	public void setLicenceDao(LicenceDAO licenceDao) {
+		this.licenceDao = licenceDao;
+	}
 
-    /*
-      * (non-Javadoc)
-      *
-      * @see edu.monash.merc.service.LicenceService#saveLicence(edu.monash.merc.domain.Licence)
-      */
-    @Override
-    public void saveLicence(Licence licence) {
-        this.licenceDao.add(licence);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see edu.monash.merc.service.LicenceService#saveLicence(edu.monash.merc.domain.Licence)
+	 */
+	@Override
+	public void saveLicence(Licence licence) {
+		this.licenceDao.add(licence);
+	}
 
-    /*
-      * (non-Javadoc)
-      *
-      * @see edu.monash.merc.service.LicenceService#updateLicence(edu.monash.merc.domain.Licence)
-      */
-    @Override
-    public void updateLicence(Licence licence) {
-        this.licenceDao.update(licence);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see edu.monash.merc.service.LicenceService#updateLicence(edu.monash.merc.domain.Licence)
+	 */
+	@Override
+	public void updateLicence(Licence licence) {
+		this.licenceDao.update(licence);
+	}
 
-    /*
-      * (non-Javadoc)
-      *
-      * @see edu.monash.merc.service.LicenceService#deleteLicence(edu.monash.merc.domain.Licence)
-      */
-    @Override
-    public void deleteLicence(Licence licence) {
-        this.licenceDao.remove(licence);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see edu.monash.merc.service.LicenceService#mergeLicence(edu.monash.merc.domain.Licence)
+	 */
+	@Override
+	public void mergeLicence(Licence licence) {
+		this.licenceDao.merge(licence);
+	}
 
-    /*
-      * (non-Javadoc)
-      *
-      * @see edu.monash.merc.service.LicenceService#getLicenceById(long)
-      */
-    @Override
-    public Licence getLicenceById(long id) {
-        return this.licenceDao.get(id);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see edu.monash.merc.service.LicenceService#deleteLicence(edu.monash.merc.domain.Licence)
+	 */
+	@Override
+	public void deleteLicence(Licence licence) {
+		this.licenceDao.remove(licence);
+	}
 
-    /*
-      * (non-Javadoc)
-      *
-      * @see edu.monash.merc.service.LicenceService#deleteLicenceById(long)
-      */
-    @Override
-    public void deleteLicenceById(long id) {
-        this.licenceDao.deleteLicenceById(id);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see edu.monash.merc.service.LicenceService#getLicenceById(long)
+	 */
+	@Override
+	public Licence getLicenceById(long id) {
+		return this.licenceDao.get(id);
+	}
 
-    @Override
-    public Licence getLicenceByRegMetadataId(long regMdId) {
-        return this.licenceDao.getLicenceByRegMetadataId(regMdId);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see edu.monash.merc.service.LicenceService#deleteLicenceById(long)
+	 */
+	@Override
+	public void deleteLicenceById(long id) {
+		this.licenceDao.deleteLicenceById(id);
+	}
+
+	@Override
+	public Licence getLicenceByRegMetadataId(long regMdId) {
+		return this.licenceDao.getLicenceByRegMetadataId(regMdId);
+	}
 }

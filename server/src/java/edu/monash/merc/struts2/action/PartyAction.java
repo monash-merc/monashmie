@@ -55,10 +55,6 @@ public class PartyAction extends DMBaseAction {
 	@Autowired
 	private PartyActivityWSService partyActivitySvc;
 
-	private String userName;
-
-	private String password;
-
 	private String party;
 
 	private String stringResult;
@@ -140,29 +136,6 @@ public class PartyAction extends DMBaseAction {
 
 	public void setStringResult(String stringResult) {
 		this.stringResult = stringResult;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * @return the party
-	 */
-	public String getParty() {
-		return party;
 	}
 
 	/**

@@ -40,6 +40,8 @@ public interface LicenceService {
     public void saveLicence(Licence licence);
 
     public void updateLicence(Licence licence);
+    
+    public void mergeLicence(Licence licence);
 
     public void deleteLicence(Licence licence);
 

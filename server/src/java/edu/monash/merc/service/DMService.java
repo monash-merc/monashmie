@@ -72,6 +72,8 @@ public interface DMService {
     public void saveLicence(Licence licence);
 
     public void updateLicence(Licence licence);
+    
+    public void mergeLicence(Licence licence);
 
     public Licence getLicenceByRegMetadataId(long regMdId);
 

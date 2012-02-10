@@ -76,6 +76,8 @@ public class MetadataRegAction extends DMBaseAction {
     private String groupName;
 
     private String appName;
+    
+    private String rifcsStoreLocation;
 
     private RegMetadata regMetadata;
 
@@ -115,7 +117,6 @@ public class MetadataRegAction extends DMBaseAction {
                 regMetadata.setId(previousRegMetadata.getId());
                 regMetadata.setUniqueId(previousRegMetadata.getUniqueId());
             }
-
             //generate the rifcs unique id if required
             if (StringUtils.isBlank(regMetadata.getUniqueId())) {
                 String monUuid = this.identifierService.genUUIDWithPrefix();
@@ -128,9 +129,13 @@ public class MetadataRegAction extends DMBaseAction {
             this.groupName = appSetting.getPropValue(AppPropSettings.ANDS_RIFCS_REG_GROUP_NAME);
             this.accessRights = appSetting.getPropValue(AppPropSettings.ANDS_RIFCS_DATASET_ACCESS_RIGHTS);
             this.appName = getServerQName();
+            this.rifcsStoreLocation = appSetting.getPropValue(AppPropSettings.ANDS_RIFCS_STORE_LOCATION);
 
             //create a new MDRegistrationBean
             MDRegistrationBean mdRegBean = new MDRegistrationBean();
+            mdRegBean.setRifcsStoreLocation(rifcsStoreLocation);
+            //set the RegMetadata
+            mdRegBean.setRegMetadata(regMetadata);
             //set rifcs group name
             mdRegBean.setRifcsGroupName(this.groupName);
             //set access rights

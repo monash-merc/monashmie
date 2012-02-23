@@ -133,6 +133,7 @@ public class MetadataRegAction extends DMBaseAction {
 
             //create a new MDRegistrationBean
             MDRegistrationBean mdRegBean = new MDRegistrationBean();
+            mdRegBean.setPhysicalAddress(physicalAddress);
             mdRegBean.setRifcsStoreLocation(rifcsStoreLocation);
             //set the RegMetadata
             mdRegBean.setRegMetadata(regMetadata);

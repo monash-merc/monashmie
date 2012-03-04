@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author: Simon Yu
- * @email: Xiaoming.Yu@monash.edu
+ * @author Simon Yu
+ * @email Xiaoming.Yu@monash.edu
  *
  * Date: 5/01/12
  * Time: 2:17 PM
- * @version: 1.0
+ * @version 1.0
  */
 @Scope("prototype")
 @Service

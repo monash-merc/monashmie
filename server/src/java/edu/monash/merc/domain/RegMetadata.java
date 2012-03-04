@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: Simon Yu
- * @email: Xiaoming.Yu@monash.edu
+ * @author Simon Yu
+ * @email Xiaoming.Yu@monash.edu
  *
  * Date: 4/01/12
  * Time: 5:21 PM
- * @version: 1.0
+ * @version 1.0
  */
 
 @Entity

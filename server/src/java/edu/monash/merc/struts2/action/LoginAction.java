@@ -35,12 +35,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import edu.monash.merc.common.service.ldap.LDAPService;
 
 /**
- * @author: Simon Yu
- * @email: Xiaoming.Yu@monash.edu
+ * @author Simon Yu
+ * @email Xiaoming.Yu@monash.edu
  * Modified by Sindhu Emilda - sindhu.emilda@monash.edu
  * 
  *         Date: 5/01/12 Time: 2:01 PM
- * @version: 1.0
+ * @version 1.0
  */
 @Scope("prototype")
 @Controller("user.loginAction")

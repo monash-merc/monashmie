@@ -3,12 +3,12 @@ package edu.monash.merc.dto;
 import java.io.Serializable;
 
 /**
- * @author: Simon Yu
- * @email: Xiaoming.Yu@monash.edu
+ * @author Simon Yu
+ * @email Xiaoming.Yu@monash.edu
  *
  * Date: 30/01/12
  * Time: 12:05 PM
- * @version: 1.0
+ * @version 1.0
  */
 public class LicenceBean implements Serializable {
 

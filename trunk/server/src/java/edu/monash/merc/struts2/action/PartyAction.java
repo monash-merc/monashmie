@@ -39,11 +39,11 @@ import edu.monash.merc.dto.LDAPUser;
 import edu.monash.merc.dto.PartyBean;
 
 /**
- * @author: Sindhu Emilda
- * @email: sindhu.emilda@monash.edu
+ * @author Sindhu Emilda
+ * @email sindhu.emilda@monash.edu
  * 
  *         Date: 27/01/12 Time: 2:00 PM
- * @version: 1.0
+ * @version 1.0
  */
 @Scope("prototype")
 @Controller("data.searchPartyAction")

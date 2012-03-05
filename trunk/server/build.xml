@@ -350,7 +350,7 @@
     <!--    generates the java api docs                                      -->
     <!-- =================================================================== -->
     <target name="generate-javadoc" depends="clean">
-        <javadoc destdir="${dist.javadoc.dir}" use="true" windowtitle="Interferome Java API"
+        <javadoc destdir="${dist.javadoc.dir}" use="true" windowtitle="Omero Metadata RegistrationJava API"
                  classpathref="build.classpath">
             <packageset dir="${src.java.dir}" defaultexcludes="yes">
                 <exclude name="xslt/"/>
@@ -359,7 +359,7 @@
                 <exclude name="**/*.properties"/>
             </packageset>
             <doctitle>
-                <![CDATA[<h2>Java API for Interferome, version ${javadoc.version}<br/>
+                <![CDATA[<h2>Java API for Omero Metadata Registration, version ${javadoc.version}<br/>
                                     API Specification<br/>
               </h2>]]>
             </doctitle>
@@ -367,7 +367,7 @@
                 <![CDATA[<i>Copyright &#169; 2010-2011 Monash University, e-Research Centre, Australia. All Rights Reserved.</i>]]>
             </bottom>
         </javadoc>
-        <echo message="Interferome Java API v${javadoc.version} Javadoc Generated !!"/>
+        <echo message="Omero Metadata RegistrationJava API v${javadoc.version} Javadoc Generated !!"/>
     </target>
 
     <target name="zip-javadoc" depends="generate-javadoc">

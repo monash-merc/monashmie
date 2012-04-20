@@ -300,7 +300,7 @@ public class RIFCSServiceImpl implements RIFCSService {
         rifcsBuilder.append(lineSeparator);
         rifcsBuilder.append("</electronic>");
         rifcsBuilder.append(lineSeparator);
-        rifcsBuilder.append("<physical type=\"streetAddress\">");
+        rifcsBuilder.append("<physical type=\"postalAddress\">");
         rifcsBuilder.append(lineSeparator);
         rifcsBuilder.append("<addressPart type=\"text\">" + pb.getAddress() + "</addressPart>");
         rifcsBuilder.append(lineSeparator);

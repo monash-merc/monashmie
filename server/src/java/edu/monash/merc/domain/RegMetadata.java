@@ -45,7 +45,7 @@ public class RegMetadata extends Domain {
     private String title;
 
     @Basic
-    @Column(name = "description")
+    @Column(name = "description", length=2000)
     private String description;
 
     @OneToOne(mappedBy = "regMetadata", targetEntity = Licence.class, fetch = FetchType.LAZY)

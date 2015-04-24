@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AntConfiguration">
-    <defaultAnt bundledAnt="true" />
-    <buildFile url="file://$PROJECT_DIR$/build.xml">
-      <additionalClassPath />
-      <antReference projectDefault="true" />
-      <customJdkName value="" />
-      <maximumHeapSize value="128" />
-      <maximumStackSize value="2" />
-      <properties />
-    </buildFile>
+    <buildFile url="file://$PROJECT_DIR$/build.xml" />
   </component>
   <component name="ClearCaseSharedConfig">
     <option name="myUseUcmModel" value="true" />
@@ -29,11 +21,13 @@
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
     </wildcardResourcePatterns>
-    <annotationProcessing enabled="false" useClasspath="true" />
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false">
+        <processorPath useClasspath="true" />
+      </profile>
+    </annotationProcessing>
   </component>
-  <component name="CopyrightManager" default="">
-    <module2copyright />
-  </component>
+  <component name="CopyrightManager" default="" />
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
@@ -197,25 +191,6 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="http://monashmie.googlecode.com/svn/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="http://monashmie.googlecode.com/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="http://monashmie.googlecode.com/svn/wiki">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="http://monashmie.googlecode.com/svn/branches" />
@@ -232,7 +207,7 @@
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
@@ -354,4 +329,3 @@
     </library>
   </component>
 </project>
-
